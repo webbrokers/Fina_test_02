@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fina Test — Сравнение версий</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #f1f5f9;
+        }
+        p {
+            color: #94a3b8;
+            margin-bottom: 3rem;
+            font-size: 1rem;
+        }
+        .cards {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 260px;
+            text-decoration: none;
+            color: inherit;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #60a5fa;
+        }
+        .card .version {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #60a5fa;
+            margin-bottom: 0.75rem;
+        }
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+        .card .desc {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        .badge {
+            display: inline-block;
+            background: #164e63;
+            color: #7dd3fc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+        .v2 .badge {
+            background: #14532d;
+            color: #86efac;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔬 Fina Performance Lab</h1>
+        <p>Тестирование и оптимизация страницы finabank.ru</p>
+        <div class="cards">
+            <a href="v1/index.html" class="card">
+                <div class="version">V1</div>
+                <h2>Оригинал</h2>
+                <p class="desc">Точная копия страницы без изменений. Эталон для сравнения.</p>
+                <span class="badge">Базовая версия</span>
+            </a>
+            <a href="v2/index.html" class="card v2">
+                <div class="version" style="color: #86efac;">V2</div>
+                <h2>Оптимизированная</h2>
+                <p class="desc">Улучшенная версия с оптимизацией Core Web Vitals.</p>
+                <span class="badge">В разработке</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
