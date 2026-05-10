@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const axios = require('axios');
 const { URL } = require('url');
+const crypto = require('crypto'); // Для генерации уникальных хешей
 
 const targetUrl = 'https://finabank.ru/collection/zajmy-s-plohoj-kreditnoj-istoriej/';
 const outputDir = path.join(__dirname, '..', 'v1');
@@ -26,9 +27,9 @@ async function downloadAsset(assetUrl, baseUrl) {
 
         const parsedUrl = new URL(absoluteUrl);
         const ext = path.extname(parsedUrl.pathname) || '.bin';
-
-        // Генерируем уникальное имя файла на основе URL
-        const hash = Buffer.from(absoluteUrl).toString('base64').substring(0, 16).replace(/[/+=]/g, '_');
+        // Генерируем уникальное имя файла: MD5-хеш от полного URL
+        // Это гарантирует отсутствие коллизий — разные URL = разные имена файлов
+        const hash = crypto.createHash('md5').update(absoluteUrl).digest('hex').substring(0, 16);
         const fileName = `${hash}${ext}`;
         const filePath = path.join(assetsDir, fileName);
 
@@ -59,9 +60,9 @@ async function downloadAsset(assetUrl, baseUrl) {
     console.log('=== Запуск scraper.js ===');
     console.log(`Цель: ${targetUrl}`);
 
-    // Запускаем браузер в НЕ headless режиме с anti-detection настройками
+    // Запускаем браузер в ВИДИМОМ режиме — лучше обходит антибот защиту
     const browser = await chromium.launch({
-        headless: true,
+        headless: false,
         args: [
             '--disable-blink-features=AutomationControlled',
             '--no-sandbox',
@@ -89,9 +90,12 @@ async function downloadAsset(assetUrl, baseUrl) {
 
     const page = await context.newPage();
 
+    // Небольшая пауза перед загрузкой — имитируем человека
+    await page.waitForTimeout(2000);
+
     console.log('Загружаем страницу...');
     try {
-        await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 60000 });
+        await page.goto(targetUrl, { waitUntil: 'networkidle', timeout: 90000 });
     } catch (e) {
         console.log(`Предупреждение при загрузке: ${e.message}`);
         console.log('Продолжаем со страницей, которая успела загрузиться...');
@@ -123,6 +127,15 @@ async function downloadAsset(assetUrl, baseUrl) {
     // Получаем финальный HTML после рендеринга
     let content = await page.content();
     const baseUrl = targetUrl;
+
+    // Проверяем — страница должна быть нормальной (> 10KB)
+    if (content.length < 10000) {
+        console.error(`❌ Страница слишком маленькая (${content.length} байт) — вероятно не загрузилась.`);
+        console.error('   Попробуйте запустить скрипт ещё раз или проверьте интернет-соединение.');
+        await browser.close();
+        process.exit(1);
+    }
+    console.log(`Страница загружена (${Math.round(content.length / 1024)} KB).`);
 
     console.log('Ищем ассеты для скачивания...');
 
