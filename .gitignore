@@ -1,0 +1,10 @@
+# Зависимости Node.js (только инструмент для скрейпинга)
+node_modules/
+
+# Логи
+*.log
+npm-debug.log*
+
+# Системные файлы
+.DS_Store
+Thumbs.db
